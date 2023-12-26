@@ -1,0 +1,1 @@
+# Installed-App-Details
