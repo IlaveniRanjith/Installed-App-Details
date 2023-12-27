@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Installed Apps</string>
+    <string name="app_name">Apps Details</string>
     <string name="application_name"><u> Application Name </u></string>
     <string name="appli_name">App Name</string>
     <string name="packager_name"><u> Package Name </u></string>
@@ -13,5 +13,8 @@
     <string name="singing_key">Singing key</string>
     <string name="application_count">Application Count</string>
     <string name="certificate_subject_2"><u> Certificate subject </u></string>
-    <string name="application_permissions"><u> Application Requested Permissions </u></string>
+    <string name="application_permissions"><u> Application Declared Permissions </u></string>
+    <string name="application_permissions_granted"><u> Application Granted Permissions </u></string>
+    <string name="no_permission_were_declared">No Permission were declared</string>
+    <string name="no_permission_were_granted">No Permission were Granted</string>
 </resources>

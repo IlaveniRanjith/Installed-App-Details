@@ -1,5 +1,6 @@
 package com.ram.installedapps;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -43,6 +44,7 @@ public class MyAppListAdapter extends BaseAdapter {
         return 0;
     }
 
+    @SuppressLint("ViewHolder")
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         //1. inflate the custom layout
