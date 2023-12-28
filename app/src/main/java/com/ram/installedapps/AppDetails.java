@@ -1,6 +1,7 @@
 package com.ram.installedapps;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.pm.PackageInfo;
@@ -28,7 +29,8 @@ import javax.security.auth.x500.X500Principal;
 
 public class AppDetails extends AppCompatActivity {
     String pkgName, applicationName;
-    TextView tvAppName, tvPkgName, tvCertFingerprint, tvCertSubject, tvCertIssuer, tvAppCount, tvPermissions, tvPermissionsGranted;
+    TextView tvAppName, tvPkgName, tvCertFingerprint, tvCertSubject,
+            tvCertIssuer, tvAppCount, tvPermissions, tvPermissionsGranted, tvAppNameWelcome, tvAlgorithm;
 
     String appIcon;
     int count;
@@ -53,6 +55,12 @@ public class AppDetails extends AppCompatActivity {
 //        tvAppCount = findViewById(R.id.tv_app_count);
         tvPermissions = findViewById(R.id.tv_permissions);
         tvPermissionsGranted = findViewById(R.id.tv_permissions_granted);
+        tvAppNameWelcome = findViewById(R.id.tv_appname_welcome);
+        tvAlgorithm = findViewById(R.id.tv_algo);
+
+        // Setting up the App Specific Name to each Application
+        tvAppNameWelcome.setText(getString(R.string.app_details_welcome, applicationName));//setting welcome textview
+
 
 
         //calling all the methods onStart()
@@ -61,6 +69,7 @@ public class AppDetails extends AppCompatActivity {
         getGrantedPermissions();
     }
 
+    @SuppressLint({"ResourceAsColor", "SetTextI18n"})
     private void getPermissions() {
         StringBuilder permissionDetails = new StringBuilder();
 
@@ -80,14 +89,17 @@ public class AppDetails extends AppCompatActivity {
             }
             tvPermissions.setText(permissionDetails);
 
-
-
-
         } catch (Exception e) {
+            tvPermissions.setText("No Permissions were Declared!!");
+//            // Set text color programmatically
+//            int textRedColor = ContextCompat.getColor(this, R.color.Red); // replace yourColorResource with the color resource ID
+//            tvPermissions.setTextColor(textRedColor);
 
         }
     }
 
+    /* REFER THIS: https://stackoverflow.com/questions/37294242/how-to-get-all-granted-permissions-of-a-app*/
+    @SuppressLint({"ResourceAsColor", "SetTextI18n"})
     void getGrantedPermissions() {
         StringBuilder permissionGranted = new StringBuilder();
 
@@ -104,6 +116,10 @@ public class AppDetails extends AppCompatActivity {
             }
             tvPermissionsGranted.setText(permissionGranted);
         } catch (Exception e) {
+            tvPermissionsGranted.setText("No Permissions were Granted!!");
+            int textGreenColor = ContextCompat.getColor(this, R.color.Green);
+            tvPermissionsGranted.setTextColor(textGreenColor);
+
         }
     }
 
@@ -125,42 +141,52 @@ public class AppDetails extends AppCompatActivity {
             Signature[] signaturesNew = sings.getSigningCertificateHistory();
 
 
+            try {
+                for (Signature signatureNew : signaturesNew) {
+                    String certificateFingerprint = getCertificateFingerprint(signatureNew);
 
-            for (Signature signatureNew : signaturesNew) {
-                String certificateFingerprint = getCertificateFingerprint(signatureNew);
+                    try {
+                        CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+                        X509Certificate x509Certificate = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(signatureNew.toByteArray()));
 
-                try {
-                    CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-                    X509Certificate x509Certificate = (X509Certificate) certFactory.generateCertificate(new ByteArrayInputStream(signatureNew.toByteArray()));
+                        X500Principal issuerPrincipal = x509Certificate.getIssuerX500Principal();
+                        X500Principal subjectPrincipal = x509Certificate.getSubjectX500Principal();
 
-                    X500Principal issuerPrincipal = x509Certificate.getIssuerX500Principal();
-                    X500Principal subjectPrincipal = x509Certificate.getSubjectX500Principal();
+                        String certificateIssuerName = issuerPrincipal.toString();
+                        String certificateSubject = subjectPrincipal.toString();
 
-                    String certificateIssuerName = issuerPrincipal.toString();
-                    String certificateSubject = subjectPrincipal.toString();
+                        Log.d("TAG", "PackageName: " + pkgName + " Certificate Info: " + certificateFingerprint);
+                        Log.d("TAG", "Certificate Issuer: " + certificateIssuerName);
+                        Log.d("TAG", "Certificate Subject: " + certificateSubject);
 
-                    Log.d("TAG", "PackageName: " + pkgName + " Certificate Info: " + certificateFingerprint);
-                    Log.d("TAG", "Certificate Issuer: " + certificateIssuerName);
-                    Log.d("TAG", "Certificate Subject: " + certificateSubject);
-
-                    // Display package name and certificate details
-                    certificateDetails.append("------------------------------------------------------\n");
-                    certificateDetails.append("Certificate Fingerprint: \n").append(certificateFingerprint).append("\n");
-                    tvCertFingerprint.setText(certificateFingerprint);
-                    certificateDetails.append("Certificate Issuer: \n").append(certificateIssuerName).append("\n");
-                    tvCertIssuer.setText(certificateIssuerName);
-                    certificateDetails.append("Certificate Subject: \n").append(certificateSubject).append("\n");
-                    tvCertSubject.setText(certificateSubject);
+                        // Display package name and certificate details
+                        certificateDetails.append("------------------------------------------------------\n");
+                        certificateDetails.append("Certificate Fingerprint: \n").append(certificateFingerprint).append("\n");
+                        tvCertFingerprint.setText(certificateFingerprint);
+                        certificateDetails.append("Certificate Issuer: \n").append(certificateIssuerName).append("\n");
+                        tvCertIssuer.setText(certificateIssuerName);
+                        certificateDetails.append("Certificate Subject: \n").append(certificateSubject).append("\n");
+                        tvCertSubject.setText(certificateSubject);
 
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+                catch (Exception e){
+                    tvCertFingerprint.setText("No Fingerprint Available");
+                    tvCertIssuer.setText("No Certificate Issuer Available");
+                    tvCertSubject.setText("No Certificate Subject Available");
+                    tvAlgorithm.setText("No Algorithm is Available");
+                    e.printStackTrace();
+                }
 
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+
+
 
         count = getIntent().getIntExtra("AppCount", 0);
 //        tvAppCount.setText("Total Applications: " + count);

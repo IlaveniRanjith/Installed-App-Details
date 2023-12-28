@@ -13,8 +13,15 @@
     <string name="singing_key">Singing key</string>
     <string name="application_count">Application Count</string>
     <string name="certificate_subject_2"><u> Certificate subject </u></string>
-    <string name="application_permissions"><u> Application Declared Permissions </u></string>
-    <string name="application_permissions_granted"><u> Application Granted Permissions </u></string>
+    <string name="application_permissions"><u>Application Declared Permissions</u></string>
+    <string name="application_permissions_granted"><u>Application Granted Permissions</u></string>
     <string name="no_permission_were_declared">No Permission were declared</string>
     <string name="no_permission_were_granted">No Permission were Granted</string>
+    <string name="app_details_welcome"><u>%1$s Details..</u></string>
+    <string name="certificate_details">Certificate Info</string>
+    <string name="sha256withrsa">SHA256withRSA</string>
+    <string name="app_label">App Label:</string>
+    <string name="signature">Signature:</string>
+    <string name="subject">Subject:</string>
+    <string name="issuer">Issuer:</string>
 </resources>
